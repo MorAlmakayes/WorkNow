@@ -1,0 +1,33 @@
+# Node.js
+client/node_modules/
+client/package-lock.json
+
+# Environment files
+.env
+client/.env
+server/.env
+server/.flaskenv
+
+# React build output
+client/build/
+
+# Python
+server/__pycache__/
+server/venv/
+
+# Logs
+*.log
+
+# IDEs
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+
+# Specific files to ignore
+client/src/components/GoogleMapEmbed.jsx
+
