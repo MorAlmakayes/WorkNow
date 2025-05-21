@@ -1,0 +1,23 @@
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1rem;
+}
+
+.admin-card {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.animate-glow {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 rgba(0, 123, 255, 0.3); }
+    50% { box-shadow: 0 0 20px rgba(0, 123, 255, 0.5); }
+    100% { box-shadow: 0 0 0 rgba(0, 123, 255, 0.3); }
+}
