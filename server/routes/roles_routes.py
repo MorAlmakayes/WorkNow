@@ -6,11 +6,10 @@ roles_bp = Blueprint('roles', __name__, url_prefix='/api/roles')
 @roles_bp.route('/', methods=['GET'])
 def get_roles():
     roles = get_roles_collection()
-    all_roles = list(roles.find())  # Fetch all roles without filtering
-    print('All roles from DB:', all_roles)  # Debug log to verify roles fetched
-    for role in all_roles:
+    active_roles = list(roles.find({"active": True}))
+    for role in active_roles:
         role["_id"] = str(role["_id"])
-    return jsonify({"roles": all_roles}), 200
+    return jsonify({"roles": active_roles}), 200
 
 
 

@@ -1,6 +1,5 @@
-from bson import ObjectId
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import create_access_token
 from utils.db import get_users_collection
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
@@ -107,76 +106,4 @@ def login():
             "email": user.get("email"),
             "user_type": user.get("user_type", "customer")
         }
-    }), 200
-
-@auth_bp.route('/register-provider', methods=['POST'])
-def register_provider():
-    data = request.json
-    name = data.get('name')
-    email = data.get('email', '').lower().strip()
-    password = data.get('password')
-    national_id = data.get('id')
-    phone = data.get('phone')
-    roles = data.get('roles', [])
-
-    # Validate required fields
-    if not all([name, email, password, national_id, phone, roles]):
-        return jsonify({"error": "חסרים שדות בהרשמה"}), 400
-    if not is_valid_email(email):
-        return jsonify({"error": "פורמט אימייל לא תקין"}), 400
-    if not is_valid_id(national_id):
-        return jsonify({"error": "תעודת זהות אינה תקינה (9 ספרות)"}), 400
-
-    users = get_users_collection()
-
-    # Check if ID is already used
-    if users.find_one({"id": national_id}):
-        return jsonify({"error": "תעודת זהות כבר קיימת"}), 400
-
-    # Check if email is already used
-    if users.find_one({"email": email}):
-        return jsonify({"error": "אימייל כבר קיים"}), 400
-
-    # Create and insert new provider
-    username = generate_unique_username(name, users)
-    new_provider = {
-        "username": username,
-        "name": name,
-        "email": email,
-        "password_hash": generate_password_hash(password),
-        "id": national_id,
-        "phone": phone,
-        "user_type": "provider",
-        "roles": roles,
-        "status": "pending"
-    }
-
-    result = users.insert_one(new_provider)
-
-    return jsonify({
-        "message": "הספק נרשם בהצלחה",
-        "username": username,
-        "user_id": str(result.inserted_id)
-    }), 201
-
-@auth_bp.route('/provider/profile', methods=['GET'])
-@jwt_required()
-def get_provider_profile():
-    user_id = get_jwt_identity()
-    users = get_users_collection()
-
-    try:
-        user = users.find_one({"_id": ObjectId(user_id)})
-    except Exception:
-        return jsonify({"error": "שגיאה בזיהוי המשתמש"}), 400
-
-    if not user:
-        return jsonify({"error": "משתמש לא נמצא"}), 404
-
-    if user.get("user_type") != "provider":
-        return jsonify({"error": "גישה אסורה – משתמש אינו ספק"}), 403
-
-    return jsonify({
-        "name": user.get("name", ""),
-        "roles": user.get("roles", [])
     }), 200
