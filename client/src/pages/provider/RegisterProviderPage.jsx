@@ -15,6 +15,7 @@ function RegisterProviderPage() {
     const [roles, setRoles] = useState([]);
     const [error, setError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [fieldErrors, setFieldErrors] = useState({});
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -31,9 +32,6 @@ function RegisterProviderPage() {
         fetchRoles();
     }, []);
 
-
-
-
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prev) => ({ ...prev, [name]: value }));
@@ -43,16 +41,53 @@ function RegisterProviderPage() {
         e.preventDefault();
         setError('');
         setSuccessMessage('');
+        setFieldErrors({});
 
         const { id, name, phone, email, password, selectedRole } = formData;
+        const newFieldErrors = {};
+        let hasError = false;
 
-        if (!/^\d{9}$/.test(id)) return setError('יש להזין ת"ז תקינה');
-        if (!name.trim()) return setError('יש להזין שם מלא');
-        if (!phone.trim()) return setError('יש להזין טלפון');
-        if (!/^[\w\.-]+@[\w\.-]+\.\w+$/.test(email)) return setError('אימייל לא תקין');
-        if (password.length < 6) return setError('סיסמה קצרה מדי');
-        if (!selectedRole) return setError('יש לבחור תחום');
+        // Validate ID (9 digits)
+        if (!/^[0-9]{9}$/.test(id)) {
+            newFieldErrors.id = 'יש להזין ת"ז תקינה (9 ספרות)';
+            hasError = true;
+        }
 
+        // Validate name (at least 2 characters)
+        if (!name.trim() || name.length < 2) {
+            newFieldErrors.name = 'יש להזין שם מלא (לפחות 2 תווים)';
+            hasError = true;
+        }
+
+        // Validate phone (Israeli format)
+        if (!/^\d{10}$/.test(phone)) {
+            newFieldErrors.phone = 'יש להזין מספר טלפון תקין (10 ספרות)';
+            hasError = true;
+        }
+
+        // Validate email (standard format)
+        if (!/^[\w.-]+@[\w.-]+\.\w+$/.test(email)) {
+            newFieldErrors.email = 'אימייל לא תקין';
+            hasError = true;
+        }
+
+        // Validate password (at least 8 characters, including a number and a special character)
+        if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(password)) {
+            newFieldErrors.password = 'סיסמה חייבת לכלול לפחות 8 תווים, מספר ותו מיוחד';
+            hasError = true;
+        }
+
+        // Validate selected role
+        if (!selectedRole) {
+            newFieldErrors.selectedRole = 'יש לבחור תחום';
+            hasError = true;
+        }
+
+        if (hasError) {
+            setFieldErrors(newFieldErrors);
+            setError('אנא תקן את השדות המסומנים');
+            return;
+        }
         try {
             const res = await registerProvider(name, email, password, phone, id, [selectedRole]);
             localStorage.setItem('user_id', res.user_id);
@@ -61,7 +96,8 @@ function RegisterProviderPage() {
             setTimeout(() => navigate('/login'), 4000);
         } catch (err) {
             console.error('❌ Registration error:', err);
-            setError(err?.response?.data?.error || 'שגיאה בהרשמה');
+            let msg = err?.response?.data?.error || 'שגיאה בהרשמה';
+            setError(msg);
         }
     };
 
@@ -85,13 +121,16 @@ function RegisterProviderPage() {
                         <div className="mb-3" key={name}>
                             <label className="form-label">{label}</label>
                             <input
-                                className="form-control"
+                                className={`form-control${fieldErrors[name] ? ' is-invalid' : ''}`}
                                 type={type}
                                 name={name}
                                 value={formData[name]}
                                 onChange={handleChange}
                                 required
                             />
+                            {fieldErrors[name] && (
+                                <div className="invalid-feedback" style={{ display: 'block' }}>{fieldErrors[name]}</div>
+                            )}
                         </div>
                     ))}
 
@@ -99,7 +138,7 @@ function RegisterProviderPage() {
                         <label className="form-label">תחום עיסוק</label>
                         <select
                             name="selectedRole"
-                            className="form-select"
+                            className={`form-select${fieldErrors.selectedRole ? ' is-invalid' : ''}`}
                             value={formData.selectedRole}
                             onChange={handleChange}
                             required
@@ -111,6 +150,9 @@ function RegisterProviderPage() {
                                 </option>
                             ))}
                         </select>
+                        {fieldErrors.selectedRole && (
+                            <div className="invalid-feedback" style={{ display: 'block' }}>{fieldErrors.selectedRole}</div>
+                        )}
                     </div>
 
                     {error && <div className="text-danger text-center mb-3">{error}</div>}

@@ -33,26 +33,28 @@ import ProviderReportsPage from './pages/provider/ProviderReportsPage';
 import ProviderAvailabilityPage from './pages/provider/ProviderAvailabilityPage';
 import ProviderAnnouncementsPage from './pages/provider/ProviderAnnouncementsPage';
 import ProviderPaymentsPage from './pages/provider/ProviderPaymentsPage';
+import HomePage from "./pages/HomePage";
+import RedirectOnLoad from './components/RedirectOnLoad';
 
 import PrivateRoute from './components/PrivateRoute';
-import RedirectOnLoad from './components/RedirectOnLoad';
 import Header from './components/Header';
 import Footer from './components/Footer';
 
 import './styles/theme.css';
+import './styles/HomePage.css';
 import './styles/OrderDetailsModal.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './styles/ImmediateOrdersPage.css';
 
 function LayoutWrapper({ children }) {
     const location = useLocation();
-    const hideLayoutPaths = ["/login", "/register", "/register/user", "/register/provider"];
+    const hideLayoutPaths = ["/", "/login", "/register", "/register/user", "/register/provider"];
     const shouldHideLayout = hideLayoutPaths.includes(location.pathname);
 
     return (
         <>
             {!shouldHideLayout && <Header />}
-            <main className={shouldHideLayout ? 'full-screen-center' : 'container my-4'}>
+            <main className={shouldHideLayout ? 'full-screen-center' : 'homepage-full'}>
                 {children}
             </main>
             {!shouldHideLayout && <Footer />}
@@ -64,7 +66,9 @@ function AppContent() {
     return (
         <LayoutWrapper>
             <Routes>
+
                 <Route path="/" element={<RedirectOnLoad />} />
+                <Route path="/home" element={<HomePage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/register/user" element={<RegisterUserPage />} />

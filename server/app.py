@@ -12,7 +12,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 # Enable CORS with credentials support
-CORS(app, supports_credentials=True)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}}, supports_credentials=True)
 
 # Initialize JWT manager
 jwt = JWTManager(app)
@@ -76,6 +76,14 @@ def test_db():
         return jsonify(status="success", collections=collections)
     except Exception as e:
         return jsonify(status="error", message=str(e)), 500
+
+@app.route('/api/<path:path>', methods=['OPTIONS'])
+def options_handler(path):
+    return '', 200
+
+@app.route('/api/auth/register-provider', methods=['OPTIONS'])
+def register_provider_options():
+    return '', 200
 
 # === Run Server ===
 if __name__ == "__main__":

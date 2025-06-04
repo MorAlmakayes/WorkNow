@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from utils.db import get_users_collection, get_bookings_collection
 from bson import ObjectId
 from datetime import datetime
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 provider_bp = Blueprint('provider', __name__, url_prefix='/api/provider')
 
@@ -210,3 +211,60 @@ def get_provider_availability(provider_id):
         return jsonify({"availability": availability}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+# ✅ Update provider services
+@provider_bp.route('/services/<provider_id>', methods=['POST'])
+def update_provider_services(provider_id):
+    data = request.json
+    services_offered = data.get("services_offered")
+
+    if services_offered is None:
+        return jsonify({"error": "Missing services_offered data"}), 400
+
+    users = get_users_collection()
+    try:
+        result = users.update_one(
+            {"_id": ObjectId(provider_id), "user_type": "provider"},
+            {"$set": {"servicesOffered": services_offered}}
+        )
+        if result.matched_count == 0:
+            return jsonify({"error": "Provider not found"}), 404
+        return jsonify({"message": "Services updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+# Fetch open orders for providers
+@provider_bp.route('/orders/open', methods=['GET'])
+@jwt_required()
+def get_open_orders():
+    bookings = get_bookings_collection()
+    open_orders = list(bookings.find({"providerId": None, "status": "pending"}))
+    for order in open_orders:
+        order["_id"] = str(order["_id"])
+        order["customerId"] = str(order["customerId"])
+    return jsonify({"orders": open_orders}), 200
+
+
+# Approve an order and assign it to the provider
+@provider_bp.route('/orders/approve', methods=['POST'])
+@jwt_required()
+def approve_order():
+    data = request.json
+    order_id = data.get("orderId")
+    provider_id = get_jwt_identity()
+
+    if not order_id:
+        return jsonify({"error": "Missing orderId"}), 400
+
+    bookings = get_bookings_collection()
+    result = bookings.update_one(
+        {"_id": ObjectId(order_id), "providerId": None, "status": "pending"},
+        {"$set": {"providerId": ObjectId(provider_id), "status": "accepted"}}
+    )
+
+    if result.matched_count == 0:
+        return jsonify({"error": "Order not found or already assigned"}), 404
+
+    return jsonify({"message": "Order approved and assigned successfully"}), 200

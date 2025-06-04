@@ -54,6 +54,8 @@ export const getAllRoles = async () => {
 
         if (Array.isArray(response.data)) {
             return response.data;
+        } else if (Array.isArray(response.data.roles)) {
+            return response.data.roles;
         } else {
             console.warn("⚠️ roles is not an array:", response.data);
             return [];
@@ -63,11 +65,6 @@ export const getAllRoles = async () => {
         throw new Error('שגיאה בטעינת התחומים');
     }
 };
-
-
-
-
-
 
 export const addRole = async (name) => {
     try {
@@ -360,8 +357,6 @@ export const getAvailabilitySettingsForProvider = async () => {
     }
 };
 
-
-
 export const updateAvailabilitySettingsForProvider = async (settings) => {
     const providerId = localStorage.getItem('user_id');
     if (!providerId) throw new Error('לא נמצא מזהה ספק');
@@ -381,7 +376,6 @@ export const updateAvailabilitySettingsForProvider = async (settings) => {
         throw new Error(err.response?.data?.error || 'שגיאה בעדכון זמינות הספק');
     }
 };
-
 
 // 📨 Messages
 export const getMessagesForProvider = async () => {
@@ -448,5 +442,27 @@ export const getProviderReports = async (from, to) => {
     } catch (err) {
         console.error("Get provider reports error:", err.response?.data || err);
         throw new Error('שגיאה בטעינת הדוחות');
+    }
+};
+
+// === Services ===
+export const getAllServices = async () => {
+    try {
+        const response = await API.get('/services');
+        return response.data;
+    } catch (err) {
+        console.error("Get all services error:", err.response?.data || err);
+        throw new Error('שגיאה בטעינת כל השירותים');
+    }
+};
+
+export const updateProviderServices = async (servicesOffered) => {
+    const providerId = localStorage.getItem('user_id');
+    try {
+        const response = await API.post(`/provider/services/${providerId}`, { services_offered: servicesOffered });
+        return response.data;
+    } catch (err) {
+        console.error("Update provider services error:", err.response?.data || err);
+        throw new Error('שגיאה בעדכון השירותים');
     }
 };

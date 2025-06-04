@@ -1,7 +1,29 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
 
 function ProviderDashboard() {
+    const [providerInfo, setProviderInfo] = useState({ name: '', roles: [] });
+
+    useEffect(() => {
+        const fetchProviderInfo = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                console.log('Token:', token);
+                const response = await axios.get('http://localhost:5001/api/provider/profile', {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                console.log('Response data:', response.data);
+                setProviderInfo(response.data);
+            } catch (error) {
+                console.error('Error fetching provider info:', error);
+            }
+        };
+
+        fetchProviderInfo();
+    }, []);
     const actions = [
         {
             title: 'הזמנות מיידיות',
@@ -67,7 +89,10 @@ function ProviderDashboard() {
 
     return (
         <main className="admin-content full-dashboard">
-            <h2 className="admin-welcome">👷‍♂️ ברוך הבא לדשבורד נותני השירות – WorkNow</h2>
+            <h2 className="admin-welcome">
+                👷‍♂️ ברוך הבא לדשבורד נותני השירות – WorkNow<br />
+                {`שם נותן השירות: ${providerInfo.name || '...'} | תפקיד: ${providerInfo.roles || '...'}`}
+            </h2>
             <div className="admin-grid">
                 {actions.map((action, index) => (
                     <div key={index} className="admin-card animate-glow">

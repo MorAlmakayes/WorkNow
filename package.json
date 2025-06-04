@@ -7,6 +7,7 @@
     "@fullcalendar/timegrid": "^5.11.3",
     "bootstrap": "^5.3.6",
     "react-bootstrap": "^2.10.10",
-    "recharts": "^2.15.3"
+    "recharts": "^2.15.3",
+    "swiper": "^8.4.7"
   }
 }

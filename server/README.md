@@ -1,184 +1,187 @@
-WorkNow – Smart Home Service Booking System
+# WorkNow – Smart Home Service Booking System
 
-WorkNow is a full-stack web application designed for real-time scheduling, booking, and management of home service providers. It supports admin dashboards, provider and customer portals, availability calendars, immediate job requests, and more.
+**WorkNow** is a full-stack web application built to streamline the booking, scheduling, and management of home service providers. It supports real-time job requests, availability calendars, and role-specific dashboards for admins, providers, and customers.
 
-Technologies Used
+---
 
-Frontend (React.js):
+## 🚀 Technologies Used
 
-React Router
+### Frontend (React.js)
 
-Axios for API communication
+* **React Router** – SPA routing
+* **Axios** – API communication
+* **Bootstrap 5** – Responsive design
+* **LocalStorage** – Session state management
 
-Bootstrap 5 for styling
+### Backend (Flask)
 
-Local storage session management
+* **Flask Blueprints** – Modular route structure
+* **Flask-JWT-Extended** – Secure user authentication
+* **PyMongo** – MongoDB integration
 
-Backend (Flask):
+### Database
 
-Flask Blueprints
+* **MongoDB Atlas** – Cloud-hosted NoSQL database
 
-Flask-JWT-Extended for authentication
+---
 
-PyMongo for MongoDB integration
+## 🗂 Project Structure
 
-Database:
-
-MongoDB Atlas (cloud-hosted)
-
-Project Structure
-
+```
 WorkNow/
-├── client/ (React frontend)
-│ ├── src/
-│ │ ├── pages/ – Views by role (admin, provider, customer)
-│ │ ├── components/ – Shared components (Header, Footer, Route guards)
-│ │ ├── services/api.js – Axios API layer
-│ │ └── App.js – App entry point
-│ └── public/
-├── server/ (Flask backend)
-│ ├── routes/ – Blueprints (auth, admin, provider, etc.)
-│ ├── utils/db.py – MongoDB client and collections
-│ └── app.py – Main app setup
-├── .env – Environment variables
-└── run.sh – Script to run client and server together
+├── client/                  # React frontend
+│   ├── src/
+│   │   ├── pages/           # Role-based views (admin, provider, customer)
+│   │   ├── components/      # Shared UI components (Header, Footer, etc.)
+│   │   ├── services/api.js  # Axios API abstraction
+│   │   └── App.js           # Main app entry point
+│   └── public/
+├── server/                  # Flask backend
+│   ├── routes/              # Flask Blueprints (auth, admin, etc.)
+│   ├── utils/db.py          # MongoDB client and collections
+│   └── app.py               # App factory & setup
+├── .env                     # Environment variables
+└── run.sh                   # Script to run client & server
+```
 
-Setup Instructions
+---
 
-Clone the Repository:
+## ⚙️ Setup Instructions
 
-bash
-Copy
-Edit
-git clone https://github.com/<your-username>/WorkNow.git  
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/<your-username>/WorkNow.git
 cd WorkNow
-Configure Environment:
-Create a .env file inside the server/ directory with the following content:
+```
 
-env
-Copy
-Edit
-MONGO_URI=your_mongodb_uri  
-JWT_SECRET_KEY=your_jwt_secret  
+### 2. Configure Environment Variables
+
+Create a `.env` file in the `server/` directory:
+
+```env
+MONGO_URI=your_mongodb_uri
+JWT_SECRET_KEY=your_jwt_secret
 FLASK_PORT=5001
-Install Backend Requirements:
+```
 
-bash
-Copy
-Edit
-cd server  
+### 3. Install Backend Dependencies
+
+```bash
+cd server
 pip install -r requirements.txt
-Install Frontend Dependencies:
+```
 
-bash
-Copy
-Edit
-cd ../client  
+### 4. Install Frontend Dependencies
+
+```bash
+cd ../client
 npm install
-Running the Project
+```
 
-Run both frontend and backend together:
+---
 
-bash
-Copy
-Edit
+## ▶️ Running the Project
+
+### Option 1: Run both client & server
+
+```bash
+chmod +x setup.sh run.sh
+./setup.sh
 ./run.sh
-Or separately:
+```
 
-Flask backend:
+### Option 2: Run separately
 
-bash
-Copy
-Edit
-cd server  
+**Backend (Flask):**
+
+```bash
+cd server
 flask run --port=5001
-React frontend:
+```
 
-bash
-Copy
-Edit
-cd client  
+**Frontend (React):**
+
+```bash
+cd client
 npm start
-User Roles & Features
+```
 
-Admin:
+---
 
-Manage providers, customers, roles
+## 👥 User Roles & Features
 
-Approve/reject providers
+### 🛠 Admin
 
-View system stats and all orders
+* Manage service providers, customers, and roles
+* Approve/reject provider registrations
+* View analytics and system-wide orders
+* Configure site availability and settings
 
-Manage site-wide availability and settings
+### 🧑‍🔧 Service Provider
 
-Provider:
+* Set weekly availability
+* Respond to live/immediate job requests
+* Access calendar, messages, reports, and statistics
+* View service history
 
-View and manage weekly availability
+### 🧑‍💼 Customer
 
-Respond to live job requests
+* Register and book services
+* Browse available providers
+* Schedule immediate or future services
+* Track order statuses
 
-Access calendar, messages, reports, stats
+---
 
-View order history and service details
+## 📆 Default Availability
 
-Customer:
+| Day             | Time          |
+| --------------- | ------------- |
+| Sunday–Thursday | 09:00 – 18:00 |
+| Friday          | 09:00 – 14:00 |
+| Saturday        | Closed        |
 
-Register and book services instantly or in advance
+Saved in MongoDB:
 
-Track order status
-
-Browse and filter available service providers
-
-Default Availability
-
-Sunday–Thursday: 09:00 to 18:00
-
-Friday: 09:00 to 14:00
-
-Saturday: Closed (not shown)
-
-Availability is saved in MongoDB using this structure:
-
-json
-Copy
-Edit
+```json
 "availability": {
-"Sunday": { "available": true, "start": "09:00", "end": "18:00" },
-"Friday": { "available": true, "start": "09:00", "end": "14:00" },
-...
+  "Sunday": { "available": true, "start": "09:00", "end": "18:00" },
+  "Friday": { "available": true, "start": "09:00", "end": "14:00" }
 }
-Features Overview
+```
 
-📅 Dynamic weekly calendar for provider availability
+---
 
-🔄 Real-time job request system for immediate services
+## 🔍 Feature Highlights
 
-🛠 Role-based dashboards and routes (Admin, Provider, Customer)
+* 📅 Dynamic Calendar – Weekly availability interface
+* 🔄 Immediate Job Requests – Real-time job flow
+* 🛡️ Role-based Routing – Custom views per user type
+* 📊 Admin Dashboard – System-wide analytics
+* 💬 Messaging System – Provider communication
+* 📃 Order History & Reports – Service and payment tracking
+* 🔐 Secure Auth – JWT-based access control and protected routes
 
-📊 Admin analytics and system statistics
+---
 
-📨 Messaging system for providers
+## 🔒 Security
 
-📑 Service management and booking history
+* JWT Authentication for all users
+* Role-based route protection
+* Input validation & centralized error handling
+* Admin approval system for new providers
 
-📃 Reports and payment tracking
+---
 
-Security
+## 👤 Contact & Credits
 
-JWT-based authentication
+**Developed by:** Mor Almakayes  
+📧 Email: [moralmakayes1@gmail.com](mailto:moralmakayes1@gmail.com)  
+🔗 LinkedIn: [linkedin.com/in/mor-almakayes](https://linkedin.com/in/mor-almakayes)
 
-Route protection for each user type
+---
 
-Role management system
+## 📜 License
 
-Error handling and centralized logging
-
-Contact
-
-Developed by Mor Almakayes
-Email: moralmakayes1@gmail.com
-LinkedIn: linkedin.com/in/mor-almakayes
-
-License
-
-This project is licensed for educational and personal development use.
+This project is licensed for **educational and personal development** use only.

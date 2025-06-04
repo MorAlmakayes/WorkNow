@@ -14,7 +14,9 @@ function AdminRolesPage() {
     const fetchRoles = async () => {
         try {
             const roleList = await getAllRoles();
+            console.log('Fetched roles:', roleList);
             setRoles(roleList);
+            console.log('Roles fetched:', roleList);
         } catch (err) {
             setError("שגיאה בטעינת התפקידים.");
         }
@@ -49,9 +51,11 @@ function AdminRolesPage() {
 
     const handleToggleActive = async (roleName) => {
         try {
-            await toggleRoleActiveStatus(roleName);
+            const response = await toggleRoleActiveStatus(roleName);
+            console.log('Toggle response:', response);
             fetchRoles();
-        } catch {
+        } catch (error) {
+            console.error('Error toggling status:', error);
             setError("שגיאה בשינוי סטטוס תחום");
         }
     };
@@ -61,14 +65,14 @@ function AdminRolesPage() {
             <h2>ניהול קטגוריות תפקידים</h2>
             <div className="mb-3">
                 <label className="form-label">הוסף תחום חדש:</label>
-                <div className="d-flex gap-2">
+                <div className="d-flex align-items-center">
                     <input
                         type="text"
                         className="form-control"
                         value={newRole}
                         onChange={(e) => setNewRole(e.target.value)}
                     />
-                    <button className="btn btn-success" onClick={handleAddRole}>הוסף</button>
+                    <button className="btn btn-success btn-sm" onClick={handleAddRole}>הוסף</button>
                 </div>
             </div>
 
@@ -81,6 +85,7 @@ function AdminRolesPage() {
                     <th>שם התחום</th>
                     <th>סטטוס</th>
                     <th>פעולות</th>
+                    <th>שירותים</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -96,10 +101,19 @@ function AdminRolesPage() {
                                 מחק
                             </button>
                         </td>
+                        <td>
+                            <button
+                                className="btn btn-primary"
+                                onClick={() => window.location.href = `/admin/services/create?role=${role.name}`}
+                            >
+                                צור שירותים עבור {role.name}
+                            </button>
+                        </td>
                     </tr>
                 ))}
                 </tbody>
             </table>
+
         </div>
     );
 }
