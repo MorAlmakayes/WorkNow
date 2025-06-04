@@ -4,6 +4,8 @@ from flask_jwt_extended import JWTManager
 from pymongo import MongoClient
 from config import Config
 import logging
+from utils.db import get_db
+from utils.init_db import init_roles
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -79,4 +81,6 @@ def test_db():
 
 # === Run Server ===
 if __name__ == "__main__":
+    # Initialize database with default roles
+    init_roles()
     app.run(host="0.0.0.0", port=Config.PORT, debug=Config.DEBUG)

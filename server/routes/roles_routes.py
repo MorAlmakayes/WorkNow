@@ -5,11 +5,15 @@ roles_bp = Blueprint('roles', __name__, url_prefix='/api/roles')
 
 @roles_bp.route('/', methods=['GET'])
 def get_roles():
-    roles = get_roles_collection()
-    active_roles = list(roles.find({"active": True}))
-    for role in active_roles:
-        role["_id"] = str(role["_id"])
-    return jsonify({"roles": active_roles}), 200
+    try:
+        roles = get_roles_collection()
+        active_roles = list(roles.find({"active": True}))
+        for role in active_roles:
+            role["_id"] = str(role["_id"])
+        return jsonify(active_roles), 200
+    except Exception as e:
+        print(f"Error fetching roles: {str(e)}")
+        return jsonify({"error": "שגיאה בטעינת התחומים"}), 500
 
 
 

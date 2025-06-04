@@ -3,6 +3,9 @@ from flask_jwt_extended import create_access_token
 from utils.db import get_users_collection
 from werkzeug.security import generate_password_hash, check_password_hash
 import re
+import random
+import string
+import datetime
 
 # Define blueprint for auth routes
 auth_bp = Blueprint('auth', __name__, url_prefix='/api/auth')
@@ -107,3 +110,53 @@ def login():
             "user_type": user.get("user_type", "customer")
         }
     }), 200
+
+# Endpoint to register a new provider
+@auth_bp.route('/register-provider', methods=['POST'])
+def register_provider():
+    data = request.json
+    name = data.get('name')
+    email = data.get('email', '').lower().strip()
+    password = data.get('password')
+    national_id = data.get('id')
+    phone = data.get('phone')
+    roles = data.get('roles', [])
+
+    # Validate required fields
+    if not all([name, email, password, national_id, phone]):
+        return jsonify({"error": "חסרים שדות בהרשמה"}), 400
+    if not is_valid_email(email):
+        return jsonify({"error": "פורמט אימייל לא תקין"}), 400
+    if not is_valid_id(national_id):
+        return jsonify({"error": "תעודת זהות אינה תקינה (9 ספרות)"}), 400
+    if not roles:
+        return jsonify({"error": "יש לבחור לפחות תחום אחד"}), 400
+
+    users = get_users_collection()
+
+    # Check if email is already used
+    if users.find_one({"email": email}):
+        return jsonify({"error": "אימייל כבר קיים"}), 400
+
+    # Create and insert new provider
+    username = generate_unique_username(name, users)
+    new_provider = {
+        "username": username,
+        "name": name,
+        "email": email,
+        "password_hash": generate_password_hash(password),
+        "id": national_id,
+        "phone": phone,
+        "user_type": "provider",
+        "servicesOffered": roles,
+        "status": "pending",  # New providers need approval
+        "created_at": datetime.datetime.utcnow()
+    }
+
+    result = users.insert_one(new_provider)
+
+    return jsonify({
+        "message": "הספק נרשם בהצלחה",
+        "username": username,
+        "user_id": str(result.inserted_id)
+    }), 201
