@@ -1,70 +1,187 @@
-# Getting Started with Create React App
+# WorkNow – Smart Home Service Booking System
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**WorkNow** is a full-stack web application built to streamline the booking, scheduling, and management of home service providers. It supports real-time job requests, availability calendars, and role-specific dashboards for admins, providers, and customers.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## 🚀 Technologies Used
 
-### `npm start`
+### Frontend (React.js)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+* **React Router** – SPA routing
+* **Axios** – API communication
+* **Bootstrap 5** – Responsive design
+* **LocalStorage** – Session state management
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+### Backend (Flask)
 
-### `npm test`
+* **Flask Blueprints** – Modular route structure
+* **Flask-JWT-Extended** – Secure user authentication
+* **PyMongo** – MongoDB integration
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Database
 
-### `npm run build`
+* **MongoDB Atlas** – Cloud-hosted NoSQL database
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+---
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+## 🗂 Project Structure
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```
+WorkNow/
+├── client/                  # React frontend
+│   ├── src/
+│   │   ├── pages/           # Role-based views (admin, provider, customer)
+│   │   ├── components/      # Shared UI components (Header, Footer, etc.)
+│   │   ├── services/api.js  # Axios API abstraction
+│   │   └── App.js           # Main app entry point
+│   └── public/
+├── server/                  # Flask backend
+│   ├── routes/              # Flask Blueprints (auth, admin, etc.)
+│   ├── utils/db.py          # MongoDB client and collections
+│   └── app.py               # App factory & setup
+├── .env                     # Environment variables
+└── run.sh                   # Script to run client & server
+```
 
-### `npm run eject`
+---
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## ⚙️ Setup Instructions
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 1. Clone the Repository
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+git clone https://github.com/<your-username>/WorkNow.git
+cd WorkNow
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### 2. Configure Environment Variables
 
-## Learn More
+Create a `.env` file in the `server/` directory:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```env
+MONGO_URI=your_mongodb_uri
+JWT_SECRET_KEY=your_jwt_secret
+FLASK_PORT=5001
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3. Install Backend Dependencies
 
-### Code Splitting
+```bash
+cd server
+pip install -r requirements.txt
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+### 4. Install Frontend Dependencies
 
-### Analyzing the Bundle Size
+```bash
+cd ../client
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## ▶️ Running the Project
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+### Option 1: Run both client & server
 
-### Advanced Configuration
+```bash
+chmod +x setup.sh run.sh
+./setup.sh
+./run.sh
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Option 2: Run separately
 
-### Deployment
+**Backend (Flask):**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+```bash
+cd server
+flask run --port=5001
+```
 
-### `npm run build` fails to minify
+**Frontend (React):**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+cd client
+npm start
+```
+
+---
+
+## 👥 User Roles & Features
+
+### 🛠 Admin
+
+* Manage service providers, customers, and roles
+* Approve/reject provider registrations
+* View analytics and system-wide orders
+* Configure site availability and settings
+
+### 🧑‍🔧 Service Provider
+
+* Set weekly availability
+* Respond to live/immediate job requests
+* Access calendar, messages, reports, and statistics
+* View service history
+
+### 🧑‍💼 Customer
+
+* Register and book services
+* Browse available providers
+* Schedule immediate or future services
+* Track order statuses
+
+---
+
+## 📆 Default Availability
+
+| Day             | Time          |
+| --------------- | ------------- |
+| Sunday–Thursday | 09:00 – 18:00 |
+| Friday          | 09:00 – 14:00 |
+| Saturday        | Closed        |
+
+Saved in MongoDB:
+
+```json
+"availability": {
+  "Sunday": { "available": true, "start": "09:00", "end": "18:00" },
+  "Friday": { "available": true, "start": "09:00", "end": "14:00" }
+}
+```
+
+---
+
+## 🔍 Feature Highlights
+
+* 📅 Dynamic Calendar – Weekly availability interface
+* 🔄 Immediate Job Requests – Real-time job flow
+* 🛡️ Role-based Routing – Custom views per user type
+* 📊 Admin Dashboard – System-wide analytics
+* 💬 Messaging System – Provider communication
+* 📃 Order History & Reports – Service and payment tracking
+* 🔐 Secure Auth – JWT-based access control and protected routes
+
+---
+
+## 🔒 Security
+
+* JWT Authentication for all users
+* Role-based route protection
+* Input validation & centralized error handling
+* Admin approval system for new providers
+
+---
+
+## 👤 Contact & Credits
+
+**Developed by:** Mor Almakayes  
+📧 Email: [moralmakayes1@gmail.com](mailto:moralmakayes1@gmail.com)  
+🔗 LinkedIn: [linkedin.com/in/mor-almakayes](https://linkedin.com/in/mor-almakayes)
+
+---
+
+## 📜 License
+
+This project is licensed for **educational and personal development** use only.
